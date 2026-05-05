@@ -1,9 +1,8 @@
-# Author: ape1sin457, Version: 1.1
 import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
 
-# --- Логика базы данных ---
+# --- Логіка бази даних ---
 def init_db():
     conn = sqlite3.connect('real_estate.db')
     cursor = conn.cursor()
@@ -19,36 +18,37 @@ def add_to_db(address, rooms, price):
     conn.commit()
     conn.close()
 
-# --- Интерфейс ---
+# --- Інтерфейс ---
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Реєстр нерухомості")
-        self.geometry("500x400")
+        self.geometry("600x500")
 
-        # Поля ввода
-        tk.Label(self, text="Адреса:").pack()
-        self.addr_entry = tk.Entry(self, width=40)
+        # Поля введення
+        tk.Label(self, text="Адреса:").pack(pady=5)
+        self.addr_entry = tk.Entry(self, width=50)
         self.addr_entry.pack()
 
-        tk.Label(self, text="Кількість кімнат:").pack()
-        self.rooms_entry = tk.Entry(self)
+        tk.Label(self, text="Кількість кімнат:").pack(pady=5)
+        self.rooms_entry = tk.Entry(self, width=20)
         self.rooms_entry.pack()
 
-        tk.Label(self, text="Ціна ($):").pack()
-        self.price_entry = tk.Entry(self)
+        tk.Label(self, text="Ціна ($):").pack(pady=5)
+        self.price_entry = tk.Entry(self, width=20)
         self.price_entry.pack()
 
         # Кнопки
-        tk.Button(self, text="Додати квартиру", command=self.save_data).pack(pady=10)
+        tk.Button(self, text="Додати квартиру", command=self.save_data, bg="#e1e1e1").pack(pady=15)
         
-        # Таблица
-        self.tree = ttk.Treeview(self, columns=("ID", "Адреса", "Кімнати", "Ціна"), show='headings')
-        self.tree.heading("ID", text="ID")
-        self.tree.heading("Адреса", text="Адреса")
-        self.tree.heading("Кімнати", text="Кімнати")
-        self.tree.heading("Ціна", text="Ціна")
-        self.tree.pack(fill=tk.BOTH, expand=True)
+        # Таблиця
+        columns = ("ID", "Адреса", "Кімнати", "Ціна")
+        self.tree = ttk.Treeview(self, columns=columns, show='headings')
+        for col in columns:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=100)
+        
+        self.tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
         self.refresh_table()
 
@@ -58,13 +58,19 @@ class App(tk.Tk):
         price = self.price_entry.get()
         
         if addr and rooms and price:
-            add_to_db(addr, int(rooms), float(price))
-            self.refresh_table()
-            messagebox.showinfo("Успіх", "Дані збережено!")
+            try:
+                add_to_db(addr, int(rooms), float(price))
+                self.addr_entry.delete(0, tk.END)
+                self.rooms_entry.delete(0, tk.END)
+                self.price_entry.delete(0, tk.END)
+                self.refresh_table()
+                messagebox.showinfo("Успіх", "Дані збережено!")
+            except ValueError:
+                messagebox.showerror("Помилка", "Ціна та кількість кімнат мають бути числами!")
         else:
             messagebox.showwarning("Помилка", "Заповніть всі поля")
 
-def refresh_table(self):
+    def refresh_table(self):
         for i in self.tree.get_children():
             self.tree.delete(i)
         conn = sqlite3.connect('real_estate.db')
@@ -73,20 +79,8 @@ def refresh_table(self):
         for row in cursor.fetchall():
             self.tree.insert("", tk.END, values=row)
         conn.close()
+
 if __name__ == "__main__":
     init_db()
     app = App()
     app.mainloop()
-def delete_item(self):
-        selected_item = self.tree.selection()
-        if not selected_item:
-            messagebox.showwarning("Помилка", "Виберіть рядок для видалення")
-            return
-        
-        item_data = self.tree.item(selected_item)['values']
-        conn = sqlite3.connect('real_estate.db')
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM apartments WHERE id=?", (item_data[0],))
-        conn.commit()
-        conn.close()
-        self.refresh_table()
