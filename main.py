@@ -64,21 +64,15 @@ class App(tk.Tk):
         else:
             messagebox.showwarning("Помилка", "Заповніть всі поля")
 
-    def refresh_table(self):
+def refresh_table(self):
         for i in self.tree.get_children():
             self.tree.delete(i)
         conn = sqlite3.connect('real_estate.db')
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM apartments")
         for row in cursor.fetchall():
-            self.tree.insert("",```
-
----
-
-### 3. Що попросити в ІІ для заповнення пояснювальної записки:
-Щ tk.END, values=row)
+            self.tree.insert("", tk.END, values=row)
         conn.close()
-
 if __name__ == "__main__":
     init_db()
     app = App()
