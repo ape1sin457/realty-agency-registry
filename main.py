@@ -1,3 +1,4 @@
+# Author: ape1sin457, Version: 1.1
 import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
