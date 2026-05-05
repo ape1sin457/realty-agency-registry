@@ -83,3 +83,16 @@ if __name__ == "__main__":
     init_db()
     app = App()
     app.mainloop()
+def delete_item(self):
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showwarning("Помилка", "Виберіть рядок для видалення")
+            return
+        
+        item_data = self.tree.item(selected_item)['values']
+        conn = sqlite3.connect('real_estate.db')
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM apartments WHERE id=?", (item_data[0],))
+        conn.commit()
+        conn.close()
+        self.refresh_table()
